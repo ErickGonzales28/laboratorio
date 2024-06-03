@@ -9,39 +9,40 @@ on:
       - main
 
 jobs:
-    test:
-      name: Test
-      runs-on: ubuntu-latest
+  test:
+    name: Test
+    runs-on: ubuntu-latest
 
-      strategy: 
-         matrix:
-            node-version: [20.x]
+    strategy: 
+      matrix:
+        node-version: [20.x]
 
     steps:
       - name: Checkout 
-        uses: actions/checkout@v4 # was "v3" before 
+        uses: actions/checkout@v4
         with: 
           fetch-depth: 0
 
       - name: Use Node.JS ${{ matrix.node-version }}
-        uses: actions/setup-node@v4 # was "v3" before
+        uses: actions/setup-node@v4
         with: 
           node-version: ${{ matrix.node-version }}
 
       - name: NPM install, build and test
         run: |
           npm install
-          npm run 
+          npm run build
           npm test
 
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    needs: [Test]
+    needs: [test]
 
     steps:
-     - name: Deploy to production
-       uses: johnbeynon/render-deploy-action@v0.0.8
-       with:
-         service-id: ${{ secrets.SERVICE_ID }}
-         api-key: ${{ secrets.RENDER_API_KEY }}
+      - name: Deploy to production
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+
